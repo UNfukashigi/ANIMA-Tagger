@@ -1,5 +1,7 @@
 # ANIMA-Tagger
 
+<img src="https://github.com/UNfukashigi/ANIMA-Tagger/blob/main/image.png">
+
 ANIMA-Tagger は、ANIMA 系 LoRA の学習用データセットに向けた画像タグ付け補助ツールです。
 
 画像フォルダを指定すると、各画像に対してタグを生成し、同名の `.txt` ファイルとして保存します。Danbooru 系タグに強い WD14 タガーをベースにしつつ、Qwen-VL で絵柄、塗り、線、ライティング、構図などの補助タグを追加します。
