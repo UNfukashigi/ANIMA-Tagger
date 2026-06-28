@@ -1,2 +1,107 @@
 # ANIMA-Tagger
-Detailed caption/tag generator for ANIMA and anime LoRA datasets using WD14 and Qwen-VL.
+
+ANIMA-Tagger は、ANIMA 系 LoRA の学習用データセットに向けた画像タグ付け補助ツールです。
+
+画像フォルダを指定すると、各画像に対してタグを生成し、同名の `.txt` ファイルとして保存します。Danbooru 系タグに強い WD14 タガーをベースにしつつ、Qwen-VL で絵柄、塗り、線、ライティング、構図などの補助タグを追加します。
+
+LoRA 作成時に使いやすい、より詳細なキャプションを作ることを目的にしています。ANIMA 向けに調整していますが、ANIMA 以外のキャラクター LoRA や画風 LoRA のデータセット作成にも活用できます。
+
+LoRA 作成には、以下のアプリをご利用ください。
+
+- [UNfukashigi/Anima-LoRA-Factory](https://github.com/UNfukashigi/Anima-LoRA-Factory)
+- [UNfukashigi/SDXL-LoRA-Factory](https://github.com/UNfukashigi/SDXL-LoRA-Factory)
+
+## 主な機能
+
+- 画像フォルダ内の `.png`, `.jpg`, `.jpeg`, `.webp` を読み込み
+- WD14 による Danbooru 系タグ生成
+- Qwen-VL による ANIMA 向け補助タグ生成
+- PNG メタデータ内の positive prompt 取得
+- ComfyUI / A1111 / NovelAI 系メタデータの一部に対応
+- トリガーワードを先頭に自動追加
+- 複数のトリガーワード入力に対応
+- タグの個別編集
+- タグの一括追加・一括削除
+- タグ種別ごとの色分け表示
+- 実行ログと進捗表示
+
+## タグ生成の流れ
+
+1. 画像メタデータから既存プロンプトを取得
+2. WD14 でキャラクター、服装、髪、目、背景などの基礎タグを生成
+3. Qwen-VL で WD14 が拾いにくい絵柄・線・塗り・光・構図を補足
+4. 重複タグ、数字だけのタグ、品質タグなどを整理
+5. トリガーワードを先頭に追加
+6. 画像と同名の `.txt` に保存
+
+## セットアップ
+
+配布 ZIP に含まれるアプリ部分だけで起動できる構成です。
+
+1. 配布された ZIP ファイルをダウンロード
+2. ZIP を任意の場所に展開
+3. 展開した `ANIMA-Tagger` フォルダを開く
+4. `start.bat` を実行
+
+初回起動時に Python 仮想環境の作成、依存ライブラリのインストール、必要なモデルのダウンロードを行います。初回セットアップには約20分かかります。
+
+## 動作環境
+
+- Windows
+- CUDA が利用可能な NVIDIA RTX GPU
+  - 例: RTX 30 シリーズ、RTX 40 シリーズ、RTX 50 シリーズ
+- インターネット接続（初回セットアップ時のモデルダウンロードに必要）
+- 十分な空き容量（Qwen-VL と WD14 のモデルを保存します）
+
+## 使い方
+
+1. `start.bat` を実行
+2. ブラウザで ANIMA-Tagger が開く
+3. データセットのフォルダを選択
+4. 必要に応じてトリガーワードを入力
+5. 自動タグ付けを開始
+6. 生成されたタグを確認・編集
+
+トリガーワードは複数入力できます。複数指定する場合はカンマで区切ってください。
+
+例:
+
+```text
+my_character, my_style
+```
+
+タグ付けが完了すると、各画像と同じ場所に `.txt` ファイルが作成されます。
+
+例:
+
+```text
+image001.png
+image001.txt
+```
+
+## 一括編集
+
+右上の `一括編集` から、読み込んだ全画像のタグをまとめて編集できます。
+
+- テキストボックスからタグを一括追加
+- テキストボックスからタグを一括削除
+- 既存タグをオートコンプリート検索
+- 全画像に含まれるタグ一覧からクリック削除
+
+下部のタグ一覧は読み込んだ順、オートコンプリート候補はアルファベット順で表示されます。
+
+## 注意点
+
+- 初回起動時はモデルダウンロードのため約20分かかります。2回目以降はすぐに起動できます。
+- Qwen-VL の実行には CUDA が利用可能な NVIDIA RTX GPU 搭載の Windows 環境が必要です。
+- WD14 は ONNX Runtime を使って実行します。
+- 生成タグは必ずしも完全ではありません。学習前に一括編集・個別編集で確認してください。
+- ComfyUI の workflow メタデータが画像に含まれる場合、positive prompt の抽出を試みますが、複雑なワークフローでは意図通りに取得できない場合があります。
+- 個人開発のアプリのため、予期しないバグによってキャプションやタグがおかしくなる可能性があります。生成結果は自己責任で確認・利用してください。
+
+## 使用モデル
+
+このツールでは、以下のモデルを利用しています。
+
+- WD14 Tagger: [SmilingWolf/wd-swinv2-tagger-v3](https://huggingface.co/SmilingWolf/wd-swinv2-tagger-v3)
+- Qwen-VL: [Qwen/Qwen2-VL-2B-Instruct](https://huggingface.co/Qwen/Qwen2-VL-2B-Instruct)
